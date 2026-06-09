@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ліки Поради</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0f1b2d;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 40px;
+  }
+
+  /* HEADER */
+  .header {
+    width: 100%;
+    padding: 18px 20px 14px;
+    background: linear-gradient(180deg, #0d1e33 0%, #162336 100%);
+    text-align: center;
+    border-bottom: 1px solid #1e3a5f;
+  }
+  .header-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #64b5f6;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: #546e7a;
+    margin-top: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  /* BODY SILHOUETTE */
+  .body-container {
+    position: relative;
+    width: 280px;
+    margin: 20px auto 0;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  svg.human {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 24px rgba(100,181,246,0.12));
+  }
+
+  /* DOTS */
+  .dot {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #2196f3, #0d47a1);
+    border: 2px solid #64b5f6;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s, box-shadow 0.18s;
+    box-shadow: 0 0 0 4px rgba(100,181,246,0.15), 0 0 14px rgba(100,181,246,0.4);
+    animation: pulse 2.4s ease-in-out infinite;
+    z-index: 10;
+  }
+  .dot:hover, .dot.active {
+    transform: translate(-50%, -50%) scale(1.25);
+    box-shadow: 0 0 0 6px rgba(100,181,246,0.25), 0 0 22px rgba(100,181,246,0.8);
+    animation: none;
+    background: radial-gradient(circle at 35% 35%, #42a5f5, #1565c0);
+  }
+  .dot-label {
+    position: absolute;
+    font-size: 10px;
+    color: #78909c;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translateY(-50%);
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 3px rgba(100,181,246,0.1), 0 0 10px rgba(100,181,246,0.35); }
+    50%      { box-shadow: 0 0 0 6px rgba(100,181,246,0.2), 0 0 20px rgba(100,181,246,0.7); }
+  }
+
+  /* LEVEL 1 PANEL */
+  .panel {
+    display: none;
+    width: 92%;
+    max-width: 380px;
+    background: #162336;
+    border: 1px solid #1e3a5f;
+    border-radius: 16px;
+    margin: 16px auto 0;
+    padding: 16px;
+    animation: slideUp 0.22s ease;
+  }
+  .panel.open { display: block; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #64b5f6;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: #1976d2;
+    border-radius: 2px;
+  }
+
+  .type-item {
+    background: #0f1b2d;
+    border: 1px solid #1e3a5f;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s, transform 0.12s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .type-item:hover {
+    border-color: #42a5f5;
+    background: #112030;
+    transform: translateX(3px);
+  }
+  .type-item:active { transform: translateX(1px) scale(0.99); }
+
+  .type-num {
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    color: #90caf9;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid #1976d2;
+  }
+  .type-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e3f2fd;
+    line-height: 1.3;
+  }
+  .type-arrow {
+    margin-left: auto;
+    color: #37474f;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .close-btn {
+    width: 100%;
+    margin-top: 4px;
+    padding: 9px;
+    background: #0f1b2d;
+    border: 1px solid #1e3a5f;
+    border-radius: 10px;
+    color: #546e7a;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .close-btn:hover { background: #1a2e45; color: #90caf9; }
+
+  /* LEVEL 2 OVERLAY */
+  .detail-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 12, 22, 0.75);
+    z-index: 200;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+  }
+  .detail-overlay.open { display: flex; }
+
+  .detail-sheet {
+    background: #162336;
+    border-radius: 22px 22px 0 0;
+    width: 100%;
+    max-width: 500px;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 8px 18px 36px;
+    animation: slideSheet 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-top: 1px solid #1e3a5f;
+  }
+  @keyframes slideSheet {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  /* drag handle */
+  .sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: #1e3a5f;
+    border-radius: 2px;
+    margin: 10px auto 16px;
+  }
+
+  .detail-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #64b5f6;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .detail-subtitle {
+    font-size: 13px;
+    color: #78909c;
+    font-style: italic;
+    margin-bottom: 16px;
+    line-height: 1.6;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #1a2e45;
+  }
+
+  .med-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #546e7a;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 14px 0 8px;
+  }
+
+  .pills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .med-pill {
+    display: inline-flex;
+    align-items: center;
+    background: #0f1b2d;
+    border: 1px solid #1e3a5f;
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 13px;
+    color: #cfd8dc;
+    line-height: 1;
+  }
+  .med-pill.key {
+    border-color: #1976d2;
+    color: #90caf9;
+    background: #0d1e33;
+  }
+
+  .detail-note {
+    background: #0d1e30;
+    border-left: 3px solid #e65100;
+    border-radius: 0 10px 10px 0;
+    padding: 10px 13px;
+    margin-top: 14px;
+    font-size: 12px;
+    color: #ffb74d;
+    line-height: 1.6;
+  }
+  .detail-note.info {
+    border-left-color: #1565c0;
+    color: #90caf9;
+  }
+
+  .detail-close {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    background: #0f1b2d;
+    border: 1px solid #1e3a5f;
+    border-radius: 12px;
+    color: #546e7a;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .detail-close:hover { background: #1a2e45; color: #90caf9; }
+
+  /* placeholder panel */
+  .placeholder-text {
+    font-size: 13px;
+    color: #37474f;
+    font-style: italic;
+    padding: 8px 0 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">Ліки Поради</div>
+  <div class="header-sub">Натисни на точку — отримай інформацію</div>
+</div>
+
+<!-- BODY SILHOUETTE -->
+<div class="body-container" id="bodyContainer">
+  <svg class="human" viewBox="0 0 200 480" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#182d45"/>
+        <stop offset="50%" stop-color="#1e3a5f"/>
+        <stop offset="100%" stop-color="#182d45"/>
+      </linearGradient>
+      <linearGradient id="bodyGradDark" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#142438"/>
+        <stop offset="50%" stop-color="#192f4a"/>
+        <stop offset="100%" stop-color="#142438"/>
+      </linearGradient>
+    </defs>
+    <!-- Head -->
+    <ellipse cx="100" cy="40" rx="28" ry="33" fill="url(#bodyGrad)" stroke="#2a4a6a" stroke-width="1.5"/>
+    <!-- Neck -->
+    <rect x="89" y="68" width="22" height="20" rx="4" fill="url(#bodyGrad)" stroke="#2a4a6a" stroke-width="1.5"/>
+    <!-- Torso -->
+    <path d="M56 88 Q46 102 43 140 L43 262 Q43 272 53 272 L147 272 Q157 272 157 262 L157 140 Q154 102 144 88 Z" fill="url(#bodyGrad)" stroke="#2a4a6a" stroke-width="1.5"/>
+    <!-- Left arm -->
+    <path d="M56 88 Q31 91 26 122 L31 202 Q36 212 46 207 L43 140 Q46 102 56 88Z" fill="url(#bodyGradDark)" stroke="#2a4a6a" stroke-width="1"/>
+    <!-- Right arm -->
+    <path d="M144 88 Q169 91 174 122 L169 202 Q164 212 154 207 L157 140 Q154 102 144 88Z" fill="url(#bodyGradDark)" stroke="#2a4a6a" stroke-width="1"/>
+    <!-- Left forearm -->
+    <path d="M31 202 Q26 242 29 292 Q31 302 37 300 L41 300 Q47 302 48 292 L51 212 L46 207 Z" fill="url(#bodyGradDark)" stroke="#2a4a6a" stroke-width="1"/>
+    <!-- Right forearm -->
+    <path d="M169 202 Q174 242 171 292 Q169 302 163 300 L159 300 Q153 302 152 292 L149 212 L154 207 Z" fill="url(#bodyGradDark)" stroke="#2a4a6a" stroke-width="1"/>
+    <!-- Left leg -->
+    <path d="M43 270 Q41 342 39 402 Q38 422 51 424 L69 424 Q79 422 79 402 L81 270 Z" fill="url(#bodyGradDark)" stroke="#2a4a6a" stroke-width="1"/>
+    <!-- Right leg -->
+    <path d="M157 270 Q159 342 161 402 Q162 422 149 424 L131 424 Q121 422 121 402 L119 270 Z" fill="url(#bodyGradDark)" stroke="#2a4a6a" stroke-width="1"/>
+    <!-- Left foot -->
+    <ellipse cx="56" cy="430" rx="20" ry="10" fill="url(#bodyGrad)" stroke="#2a4a6a" stroke-width="1"/>
+    <!-- Right foot -->
+    <ellipse cx="144" cy="430" rx="20" ry="10" fill="url(#bodyGrad)" stroke="#2a4a6a" stroke-width="1"/>
+  </svg>
+
+  <!-- DOTS (% від розмірів viewBox 200×480) -->
+  <!-- Голова — cy≈40/480≈8.3%, cx≈100/200=50% -->
+  <div class="dot" style="top:8%; left:50%;" onclick="openPanel('head')" id="dot-head" title="Голова"></div>
+
+  <!-- Горло — cy≈78/480≈16%, cx≈100/200=50% -->
+  <div class="dot" style="top:16%; left:50%;" onclick="openPanel('throat')" id="dot-throat" title="Горло"></div>
+
+  <!-- Серце — cy≈140/480≈29%, cx≈65/200=32.5% -->
+  <div class="dot" style="top:29%; left:62%;" onclick="openPanel('heart')" id="dot-heart" title="Серце і тиск"></div>
+
+  <!-- Шлунок — cy≈200/480≈42%, cx≈100/200=50% -->
+  <div class="dot" style="top:42%; left:50%;" onclick="openPanel('stomach')" id="dot-stomach" title="Шлунок"></div>
+
+  <!-- Ліве коліно — cy≈370/480≈77%, cx≈60/200=30% -->
+  <div class="dot" style="top:77%; left:30%;" onclick="openPanel('joints')" id="dot-joints-l" title="Суглоби і м'язи"></div>
+
+  <!-- Праве коліно -->
+  <div class="dot" style="top:77%; left:70%;" onclick="openPanel('joints')" id="dot-joints-r" title="Суглоби і м'язи"></div>
+</div>
+
+<!-- ===================== ПАНЕЛЬ: ГОЛОВА ===================== -->
+<div class="panel" id="panel-head">
+  <div class="panel-title">Голова — тип болю</div>
+
+  <div class="type-item" onclick="openDetail('head1')">
+    <div class="type-num">1</div>
+    <div class="type-name">Головний біль напруги (ГБН)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('head2')">
+    <div class="type-num">2</div>
+    <div class="type-name">Мігрень</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('head3')">
+    <div class="type-num">3</div>
+    <div class="type-name">Кластерний (пучковий) головний біль</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('head4')">
+    <div class="type-num">4</div>
+    <div class="type-name">Синусовий головний біль (гайморит, синусит)</div>
+    <div class="type-arrow">›</div>
+  </div>
+
+  <button class="close-btn" onclick="closePanel()">✕ Закрити</button>
+</div>
+
+<!-- ===================== ПАНЕЛЬ: ГОРЛО ===================== -->
+<div class="panel" id="panel-throat">
+  <div class="panel-title">Кашель — тип</div>
+  <div class="type-item" onclick="openDetail('throat1')">
+    <div class="type-num">1</div>
+    <div class="type-name">Сухий кашель (непродуктивний)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('throat2')">
+    <div class="type-num">2</div>
+    <div class="type-name">Вологий кашель (продуктивний)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('throat3')">
+    <div class="type-num">3</div>
+    <div class="type-name">Алергічний кашель</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('throat4')">
+    <div class="type-num">4</div>
+    <div class="type-name">"Гавкаючий" кашель</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('throat5')">
+    <div class="type-num">5</div>
+    <div class="type-name">Кашель курця</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <button class="close-btn" onclick="closePanel()">✕ Закрити</button>
+</div>
+
+<!-- ===================== ПАНЕЛЬ: СЕРЦЕ ===================== -->
+<div class="panel" id="panel-heart">
+  <div class="panel-title">Серце — тип болю</div>
+  <div class="type-item" onclick="openDetail('heart1')">
+    <div class="type-num">1</div>
+    <div class="type-name">Тиснучий, стискаючий біль (стенокардія)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('heart2')">
+    <div class="type-num">2</div>
+    <div class="type-name">Колючий біль, що посилюється при диханні</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('heart3')">
+    <div class="type-num">3</div>
+    <div class="type-name">Точковий "прострілюючий" біль (невралгія)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('heart4')">
+    <div class="type-num">4</div>
+    <div class="type-name">Пекучий біль за грудиною після їжі (рефлюкс)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('heart5')">
+    <div class="type-num">5</div>
+    <div class="type-name">Колючий біль і тривога (психосоматика)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <button class="close-btn" onclick="closePanel()">✕ Закрити</button>
+</div>
+
+<!-- ===================== ПАНЕЛЬ: ШЛУНОК ===================== -->
+<div class="panel" id="panel-stomach">
+  <div class="panel-title">Шлунок — тип болю</div>
+  <div class="type-item" onclick="openDetail('stomach1')">
+    <div class="type-num">1</div>
+    <div class="type-name">Гострий, пекучий біль (печія)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('stomach2')">
+    <div class="type-num">2</div>
+    <div class="type-name">Голодний біль (натщесерце або вночі)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('stomach3')">
+    <div class="type-num">3</div>
+    <div class="type-name">Спастичний біль (коліки)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('stomach4')">
+    <div class="type-num">4</div>
+    <div class="type-name">Важкість та розпирання після їжі</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <button class="close-btn" onclick="closePanel()">✕ Закрити</button>
+</div>
+
+<!-- ===================== ПАНЕЛЬ: СУГЛОБИ ===================== -->
+<div class="panel" id="panel-joints">
+  <div class="panel-title">Суглоби — тип болю</div>
+  <div class="type-item" onclick="openDetail('joints1')">
+    <div class="type-num">1</div>
+    <div class="type-name">Механічний біль (зношення хряща)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('joints2')">
+    <div class="type-num">2</div>
+    <div class="type-name">Запальний біль (аутоімунний)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('joints3')">
+    <div class="type-num">3</div>
+    <div class="type-name">Гострий "кричущий" біль (подагра)</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <div class="type-item" onclick="openDetail('joints4')">
+    <div class="type-num">4</div>
+    <div class="type-name">Інфекційний або реактивний біль</div>
+    <div class="type-arrow">›</div>
+  </div>
+  <button class="close-btn" onclick="closePanel()">✕ Закрити</button>
+</div>
+
+
+<!-- ==================== ДЕТАЛІ: ГОЛОВА 1 ==================== -->
+<div class="detail-overlay" id="detail-head1">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">1. Головний біль напруги (ГБН)</div>
+    <div class="detail-subtitle">
+      Найчастіший тип. Відчувається як тиснучий, що стискає обручем усю черепну коробку.
+      Зазвичай виникає через стрес, утому або тривалу роботу за комп'ютером.
+    </div>
+
+    <div class="med-section-title">Анальгетики та НПЗП</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Ібупрофен</span>
+      <span class="med-pill">Парацетамол</span>
+      <span class="med-pill">Аспірин</span>
+      <span class="med-pill">Напроксен</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('head1')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ГОЛОВА 2 ==================== -->
+<div class="detail-overlay" id="detail-head2">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">2. Мігрень</div>
+    <div class="detail-subtitle">
+      Сильний, найчастіше пульсуючий біль, зазвичай з одного боку голови.
+      Часто супроводжується нудотою, чутливістю до світла та звуків.
+    </div>
+
+    <div class="med-section-title">При легких та помірних нападах</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Ібупрофен 400–600 мг</span>
+      <span class="med-pill">Напроксен</span>
+      <span class="med-pill">Анальгетики з кофеїном</span>
+    </div>
+
+    <div class="med-section-title">При важких нападах — Триптани</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Суматриптан</span>
+      <span class="med-pill key">Різатриптан</span>
+      <span class="med-pill key">Елетриптан</span>
+    </div>
+
+
+    <button class="detail-close" onclick="closeDetail('head2')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ГОЛОВА 3 ==================== -->
+<div class="detail-overlay" id="detail-head3">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">3. Кластерний (пучковий) головний біль</div>
+    <div class="detail-subtitle">
+      Нападоподібний, неймовірно сильний, свердлячий біль навколо або позаду одного ока.
+      Найчастіше зустрічається у чоловіків.
+    </div>
+
+    <div class="med-section-title">Для купірування гострого нападу</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Інгаляції 100% киснем (через маску)</span>
+      <span class="med-pill key">Триптани — ін'єкції або назальний спрей</span>
+    </div>
+
+    <div class="detail-note">
+      ⚠️ Звичайні анальгетики (парацетамол, ібупрофен) при кластерному болю <strong>неефективні</strong> — таблетки діють занадто повільно для цього типу болю.
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('head3')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ГОЛОВА 4 ==================== -->
+<div class="detail-overlay" id="detail-head4">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">4. Синусовий головний біль</div>
+    <div class="detail-subtitle">
+      Тупий, тиснучий біль у ділянці чола, навколо очей або в щоках, який посилюється при нахилі голови вперед.
+      Супроводжується закладеністю носа (гайморит, синусит).
+    </div>
+
+    <div class="med-section-title">Лікування причини — зняти набряк у пазухах</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Судинозвужувальні краплі / спреї</span>
+      <span class="med-pill">Гіпертонічні сольові розчини</span>
+    </div>
+
+    <div class="med-section-title">Зняття болю</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Ібупрофен</span>
+    </div>
+
+    <div class="detail-note info">
+      НПЗП (Ібупрофен) зменшують запалення та больовий синдром, але головне — усунути причину: набряк у пазухах носа.
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('head4')">← Назад до списку</button>
+  </div>
+</div>
+
+
+<!-- ==================== ДЕТАЛІ: СЕРЦЕ 1 ==================== -->
+<div class="detail-overlay" id="detail-heart1">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">1. Тиснучий, стискаючий біль (стенокардія)</div>
+    <div class="detail-subtitle">
+      "Ніби на груди поклали цеглину" — біль може віддавати в ліву руку, плече, лопатку, шию або щелепу. Виникає при навантаженні, морозі або стресі. Минає через 3–5 хвилин у спокої.<br><br>
+      Причина: ішемічна хвороба серця — коронарні судини звужені через атеросклеротичні бляшки.
+    </div>
+
+    <div class="med-section-title">Екстрена допомога</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Нітрогліцерин (під язик)</span>
+    </div>
+    <div class="detail-note info">Розширює судини серця за 1–2 хвилини і знімає напад.</div>
+
+    <div class="med-section-title">Базова терапія (призначає лікар)</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Бісопролол</span>
+      <span class="med-pill">Метопролол</span>
+      <span class="med-pill">Аспірин кардіо</span>
+      <span class="med-pill">Клопідогрель</span>
+      <span class="med-pill">Аторвастатин</span>
+      <span class="med-pill">Розувастатин</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('heart1')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: СЕРЦЕ 2 ==================== -->
+<div class="detail-overlay" id="detail-heart2">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">2. Колючий або ниючий біль при диханні</div>
+    <div class="detail-subtitle">
+      Тривалий біль (години або дні), посилюється при вдиху, кашлі або лежачи на спині. Полегшується, якщо сісти і нахилитися вперед.<br><br>
+      Причина: перикардит або міокардит — часто як ускладнення після грипу чи коронавірусу.
+    </div>
+
+    <div class="med-section-title">Протизапальні</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Ібупрофен (високі дози)</span>
+      <span class="med-pill key">Колхіцин</span>
+    </div>
+
+    <div class="med-section-title">При важких випадках</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Глюкокортикоїди</span>
+      <span class="med-pill">Антибіотики / противірусні</span>
+    </div>
+    <div class="detail-note">⚠️ Лікування лише під контролем лікаря — самолікування при перикардиті небезпечне.</div>
+
+    <button class="detail-close" onclick="closeDetail('heart2')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: СЕРЦЕ 3 ==================== -->
+<div class="detail-overlay" id="detail-heart3">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">3. Точковий "прострілюючий" біль (невралгія)</div>
+    <div class="detail-subtitle">
+      Гострий, як голка, або ниючий біль. Можна чітко показати пальцем, де болить. Різко посилюється при повороті тулуба, нахилі, вдиху або натисканні на міжреберний простір.<br><br>
+      Причина: міжреберна невралгія, защемлення нервових корінців у грудному відділі хребта.
+    </div>
+
+    <div class="med-section-title">Знеболювальні та НПЗЗ</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Німесулід</span>
+      <span class="med-pill key">Мелоксикам</span>
+      <span class="med-pill">Диклофенак (таблетки або гель)</span>
+    </div>
+
+    <div class="med-section-title">Міорелаксанти</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Толперизон</span>
+    </div>
+
+    <div class="med-section-title">Вітаміни групи B</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Для відновлення нервової провідності</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('heart3')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: СЕРЦЕ 4 ==================== -->
+<div class="detail-overlay" id="detail-heart4">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">4. Пекучий біль за грудиною після їжі</div>
+    <div class="detail-subtitle">
+      Палить по центру грудей після їжі, посилюється лежачи, часто з кислим присмаком у роті. Нерідко плутають зі стенокардією.<br><br>
+      Причина: закид шлункового соку в стравохід (ГЕРХ / печія).
+    </div>
+
+    <div class="med-section-title">Антациди (швидка допомога)</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Ренні</span>
+      <span class="med-pill">Маалокс</span>
+    </div>
+
+    <div class="med-section-title">Інгібітори протонної помпи</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Омепразол</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('heart4')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: СЕРЦЕ 5 ==================== -->
+<div class="detail-overlay" id="detail-heart5">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">5. Колючий біль і тривога (психосоматика)</div>
+    <div class="detail-subtitle">
+      Ниючий або миттєвий "укол" у верхівку серця. Супроводжується відчуттям клубка в горлі, панікою, прискореним диханням, тремтінням рук. Фізичне навантаження на біль не впливає.<br><br>
+      Причина: панічні атаки, хронічний стрес, кардіоневроз.
+    </div>
+
+    <div class="med-section-title">Седативні (заспокійливі)</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Валеріана</span>
+      <span class="med-pill">Собача кропива</span>
+      <span class="med-pill">Ново-Пасит</span>
+      <span class="med-pill">Корвалмент</span>
+      <span class="med-pill">Корвалол</span>
+    </div>
+    <div class="detail-note info">Ці засоби заспокоюють нервову систему, але не лікують серце.</div>
+
+    <div class="med-section-title">При серйозних тривожних розладах</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Анксіолітики (призначає лікар)</span>
+      <span class="med-pill">Психотерапія</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('heart5')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: СУГЛОБИ 1 ==================== -->
+<div class="detail-overlay" id="detail-joints1">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">1. Механічний біль (зношення хряща)</div>
+    <div class="detail-subtitle">
+      Посилюється під час навантаження (ходьба, сходи, тривале стояння), вщухає у спокої. Часто є хрускіт. Ранкова скутість минає за 10–15 хвилин.<br><br>
+      Причини: остеоартрит — вікове або посттравматичне руйнування хряща. Найчастіше страждають колінні, кульшові суглоби та кисті.
+    </div>
+
+    <div class="med-section-title">Хондропротектори (SYSADOA)</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Глюкозамін</span>
+      <span class="med-pill key">Хондроїтин сульфат</span>
+    </div>
+    <div class="detail-note info">При тривалому прийомі (від 3 місяців) підтримують хрящ та зменшують потребу в знеболювальних.</div>
+
+    <div class="med-section-title">Локальні протизапальні (гелі, мазі)</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Вольтарен (диклофенак)</span>
+      <span class="med-pill">Фастум гель (кетопрофен)</span>
+      <span class="med-pill">Ібупрофен гель</span>
+    </div>
+
+    <div class="med-section-title">Ін'єкції гіалуронової кислоти</div>
+    <div class="pills-wrap">
+      <span class="med-pill">"Рідкий протез" — вводить лікар</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('joints1')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: СУГЛОБИ 2 ==================== -->
+<div class="detail-overlay" id="detail-joints2">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">2. Запальний біль (аутоімунний)</div>
+    <div class="detail-subtitle">
+      Виникає у спокої, вночі або вранці. Ранкова скутість триває більше 30–60 хвилин. Суглоб може набрякати, червоніти, бути гарячим на дотик.<br><br>
+      Причини: ревматоїдний артрит, псоріатичний артрит, хвороба Бєхтєрєва — аутоімунні захворювання.
+    </div>
+
+    <div class="med-section-title">НПЗЗ (швидке зняття болю)</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Мелоксикам</span>
+      <span class="med-pill key">Целекоксиб</span>
+      <span class="med-pill key">Еторикоксиб</span>
+    </div>
+
+    <div class="med-section-title">Глюкокортикоїди (при сильному спалаху)</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Метилпреднізолон</span>
+      <span class="med-pill">Дексаметазон</span>
+    </div>
+
+    <div class="med-section-title">Базисна терапія</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Метотрексат</span>
+      <span class="med-pill">Сульфасалазин</span>
+      <span class="med-pill">Біологічні агенти</span>
+    </div>
+    <div class="detail-note">⚠️ Базисна терапія призначається виключно ревматологом — вона зупиняє руйнування суглобів.</div>
+
+    <button class="detail-close" onclick="closeDetail('joints2')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: СУГЛОБИ 3 ==================== -->
+<div class="detail-overlay" id="detail-joints3">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">3. Гострий "кричущий" біль (подагра)</div>
+    <div class="detail-subtitle">
+      Раптовий біль, зазвичай вночі. Найчастіше атакує великий палець ноги. Суглоб багрово-червоний, гарячий, набрякає. Боляче навіть від дотику простирадла.<br><br>
+      Причини: відкладення кристалів сечової кислоти в суглобах. Напад провокують алкоголь, м'ясо, бобові.
+    </div>
+
+    <div class="med-section-title">Під час нападу</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Колхіцин</span>
+      <span class="med-pill key">Німесулід</span>
+      <span class="med-pill">Диклофенак</span>
+    </div>
+    <div class="detail-note">⚠️ Аспірин при подагрі заборонений — він підвищує рівень сечової кислоти і погіршує стан.</div>
+
+    <div class="med-section-title">Для профілактики (поза нападами)</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Алопуринол</span>
+      <span class="med-pill">Фебуксостат</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('joints3')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: СУГЛОБИ 4 ==================== -->
+<div class="detail-overlay" id="detail-joints4">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">4. Інфекційний або реактивний біль</div>
+    <div class="detail-subtitle">
+      Суглоб різко болить, набрякає, температура тіла 38–39°C. Або біль у кількох суглобах з'являється через 2–3 тижні після кишкової чи статевої інфекції.<br><br>
+      Причини: септичний (гнійний) артрит або реактивний артрит.
+    </div>
+
+    <div class="med-section-title">Основне лікування</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Антибіотики широкого спектра</span>
+    </div>
+    <div class="detail-note">⚠️ При гнійному артриті — термінова госпіталізація. При реактивному — лікують першопричину (інфекцію).</div>
+
+    <button class="detail-close" onclick="closeDetail('joints4')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ШЛУНОК 1 ==================== -->
+<div class="detail-overlay" id="detail-stomach1">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">1. Гострий, пекучий біль (печія)</div>
+    <div class="detail-subtitle">
+      Локалізується у верхній частині живота, може підніматися за грудину. Посилюється після їжі (гострої, жирної, кислої) або в положенні лежачи.<br><br>
+      Причини: гастрит із підвищеною кислотністю, ГЕРХ, початкова стадія виразки.
+    </div>
+
+    <div class="med-section-title">Антациди (екстрена допомога)</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Алмагель</span>
+      <span class="med-pill">Маалокс</span>
+      <span class="med-pill">Ренні</span>
+    </div>
+    <div class="detail-note info">Нейтралізують кислоту за лічені хвилини. Діють швидко, але недовго.</div>
+
+    <div class="med-section-title">Інгібітори протонної помпи (ІПП)</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Омепразол</span>
+      <span class="med-pill key">Пантопразол</span>
+      <span class="med-pill key">Езомепразол</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('stomach1')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ШЛУНОК 2 ==================== -->
+<div class="detail-overlay" id="detail-stomach2">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">2. Голодний біль</div>
+    <div class="detail-subtitle">
+      Тупий, ниючий або смоктальний біль через кілька годин після їжі або вночі. Зникає одразу після їжі чи склянки води.<br><br>
+      Причини: виразкова хвороба шлунка або дванадцятипалої кишки.
+    </div>
+
+    <div class="med-section-title">Інгібітори протонної помпи</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Пантопразол</span>
+      <span class="med-pill key">Лансопразол</span>
+    </div>
+
+    <div class="med-section-title">Гастропротектори (препарати вісмуту)</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Де-Нол</span>
+      <span class="med-pill">Віс-Нол</span>
+    </div>
+
+    <div class="med-section-title">Антибіотики</div>
+    <div class="pills-wrap">
+      <span class="med-pill">При виявленні Helicobacter pylori</span>
+    </div>
+    <div class="detail-note">⚠️ Курс антибіотиків при виразці призначається виключно лікарем після діагностики.</div>
+
+    <button class="detail-close" onclick="closeDetail('stomach2')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ШЛУНОК 3 ==================== -->
+<div class="detail-overlay" id="detail-stomach3">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">3. Спастичний біль (коліки)</div>
+    <div class="detail-subtitle">
+      Біль накочує хвилями: різко хапає, тримає певний час, потім відпускає. Відчуття, ніби шлунок стиснувся в кулак.<br><br>
+      Причини: спазм м'язів через стрес, синдром подразненого кишечника, реакція на занадто холодну або гарячу їжу.
+    </div>
+
+    <div class="med-section-title">Спазмолітики</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Дротаверин (Но-Шпа)</span>
+      <span class="med-pill key">Мебеверин</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('stomach3')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ШЛУНОК 4 ==================== -->
+<div class="detail-overlay" id="detail-stomach4">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">4. Важкість та розпирання після їжі</div>
+    <div class="detail-subtitle">
+      Відчуття, ніби шлунок "зупинився". Навіть після невеликої порції з'являється переповненість, відрижка чи нудота.<br><br>
+      Причини: гастрит зі зниженою кислотністю, диспепсія, уповільнене спорожнення шлунка.
+    </div>
+
+    <div class="med-section-title">Прокінетики</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Ітоприд</span>
+      <span class="med-pill key">Домперидон (Мотиліум)</span>
+    </div>
+
+    <div class="med-section-title">Ферменти</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Панкреатин</span>
+      <span class="med-pill">Мезим</span>
+      <span class="med-pill">Креон</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('stomach4')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ГОРЛО 1 ==================== -->
+<div class="detail-overlay" id="detail-throat1">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">1. Сухий кашель (непродуктивний)</div>
+    <div class="detail-subtitle">
+      Мокротиння не виділяється. Супроводжується першінням у горлі, є виснажливим і нав'язливим, часто посилюється вночі.<br><br>
+      Причини: початок застуди чи грипу, ларингіт, фарингіт, сухе повітря, алергія, побічна дія деяких ліків від тиску.
+    </div>
+
+    <div class="med-section-title">Периферичної дії</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Преноксдіазин (Лібексин)</span>
+      <span class="med-pill">Леводропропізин (Рапітус)</span>
+    </div>
+
+    <div class="med-section-title">Центральної дії</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Бутамірат (Синекод)</span>
+      <span class="med-pill key">Кодепсин</span>
+      <span class="med-pill key">Гліодин</span>
+    </div>
+
+    <div class="med-section-title">Рослинні сиропи</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Гербіон сироп подорожника</span>
+      <span class="med-pill">Пектолван Фіто</span>
+      <span class="med-pill">Ісландський мох</span>
+      <span class="med-pill">Корінь алтеї</span>
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('throat1')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ГОРЛО 2 ==================== -->
+<div class="detail-overlay" id="detail-throat2">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">2. Вологий кашель (продуктивний)</div>
+    <div class="detail-subtitle">
+      Супроводжується виділенням мокротиння. Свідчить про запальний процес у бронхах чи легенях — організм намагається очиститися.
+    </div>
+
+    <div class="med-section-title">Муколітики (розріджують мокротиння)</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Ацетилцистеїн (АЦЦ, Флуімуцил)</span>
+      <span class="med-pill key">Амброксол (Лазолван, Амбробене)</span>
+      <span class="med-pill key">Бромгексин</span>
+      <span class="med-pill">Карбоцистеїн (Флюдітек, Мукосол)</span>
+    </div>
+
+    <div class="med-section-title">Відхаркувальні засоби</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Гвайфенезин</span>
+      <span class="med-pill">Проспан (плющ)</span>
+      <span class="med-pill">Гербіон сироп первоцвіту</span>
+      <span class="med-pill">Бронхіпрет (чебрець)</span>
+      <span class="med-pill">Мукалтин (термопсис)</span>
+    </div>
+
+    <div class="detail-note">
+      ⚠️ При вологому кашлі протикашльові засоби категорично заборонені — заблокований слиз може спричинити пневмонію.
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('throat2')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ГОРЛО 3 ==================== -->
+<div class="detail-overlay" id="detail-throat3">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">3. Алергічний кашель</div>
+    <div class="detail-subtitle">
+      Зазвичай сухий, нападами, часто супроводжується нежиттю та сльозотечею. Виникає при контакті з алергеном.
+    </div>
+
+    <div class="med-section-title">Антигістамінні препарати</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Цетиризин</span>
+      <span class="med-pill key">Лоратадин</span>
+      <span class="med-pill key">Дезлоратадин</span>
+    </div>
+
+    <div class="detail-note info">
+      Головне — усунути контакт з алергеном. Антигістамінні препарати знімають симптоми, але не усувають причину.
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('throat3')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ГОРЛО 4 ==================== -->
+<div class="detail-overlay" id="detail-throat4">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">4. "Гавкаючий" кашель</div>
+    <div class="detail-subtitle">
+      Гострий, сухий кашель, який часто супроводжується осиплістю голосу або втратою звуку. Ознака ларингіту чи крупу.
+    </div>
+
+    <div class="med-section-title">Для полегшення стану</div>
+    <div class="pills-wrap">
+      <span class="med-pill key">Інгаляції через небулайзер</span>
+    </div>
+
+    <div class="detail-note">
+      ⚠️ Вимагає термінової консультації лікаря — є ризик набряку гортані (стенозу).
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('throat4')">← Назад до списку</button>
+  </div>
+</div>
+
+<!-- ==================== ДЕТАЛІ: ГОРЛО 5 ==================== -->
+<div class="detail-overlay" id="detail-throat5">
+  <div class="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-title">5. Кашель курця</div>
+    <div class="detail-subtitle">
+      Хронічний вологий кашель, найчастіше зранку. Пов'язаний з постійним подразненням бронхів токсинами тютюнового диму.
+    </div>
+
+    <div class="med-section-title">Підтримуюче лікування</div>
+    <div class="pills-wrap">
+      <span class="med-pill">Рослинні відхаркувальні засоби</span>
+    </div>
+
+    <div class="detail-note info">
+      Головні "ліки" тут — відмова від куріння. Жоден препарат не усуне причину без цього кроку.
+    </div>
+
+    <button class="detail-close" onclick="closeDetail('throat5')">← Назад до списку</button>
+  </div>
+</div>
+
+<script>
+  let currentPanel = null;
+
+  function openPanel(zone) {
+    // якщо та сама — закрити
+    if (currentPanel === zone) {
+      closePanel();
+      return;
+    }
+    // закрити попередню
+    if (currentPanel) {
+      document.getElementById('panel-' + currentPanel).classList.remove('open');
+      setActiveDots(currentPanel, false);
+    }
+    currentPanel = zone;
+    const panel = document.getElementById('panel-' + zone);
+    panel.classList.add('open');
+    setActiveDots(zone, true);
+    // прокрутка до панелі
+    setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  }
+
+  function closePanel() {
+    if (currentPanel) {
+      document.getElementById('panel-' + currentPanel).classList.remove('open');
+      setActiveDots(currentPanel, false);
+      currentPanel = null;
+    }
+  }
+
+  function setActiveDots(zone, active) {
+    // dot IDs: dot-head, dot-throat, dot-heart, dot-stomach, dot-joints-l, dot-joints-r
+    document.querySelectorAll('[id^="dot-' + zone + '"]').forEach(d => {
+      d.classList.toggle('active', active);
+    });
+  }
+
+  function openDetail(id) {
+    document.getElementById('detail-' + id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDetail(id) {
+    document.getElementById('detail-' + id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Закрити по кліку на фон overlay
+  document.querySelectorAll('.detail-overlay').forEach(el => {
+    el.addEventListener('click', function(e) {
+      if (e.target === el) {
+        el.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+</script>
+</body>
+</html>
